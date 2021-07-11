@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const schedule = require("node-schedule");
 
-const start = schedule.scheduleJob("42 21 * * *", function () {
+const start = schedule.scheduleJob(process.env.START, function () {
   console.log("Class Time");
 
   //loading var
@@ -94,7 +94,7 @@ const start = schedule.scheduleJob("42 21 * * *", function () {
     await page.click("span.NPEfkd.RveJvd.snByac");
     console.log("-->Requested To Join The Meeting/Joined The Meeting");
 
-    const end = schedule.scheduleJob("38 21 * * *", function () {
+    const end = schedule.scheduleJob(process.env.END, function () {
       console.log("Class Time");
 
       //Ending Class -- Not Working
