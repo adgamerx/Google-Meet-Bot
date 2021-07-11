@@ -1,8 +1,7 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-require("dotenv").config();
-
 const schedule = require("node-schedule");
+require("dotenv").config();
 
 const start = schedule.scheduleJob(process.env.START, function () {
   console.log("Class Time");
@@ -73,7 +72,6 @@ const start = schedule.scheduleJob(process.env.START, function () {
     await page.keyboard.press("Enter");
     await navigationPromise;
     console.log("-->On Meet Page");
-    await pages[0];
 
     //disabling audio video
 
