@@ -1,89 +1,105 @@
-const puppeteer = require('puppeteer-extra');
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-require('dotenv').config();
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+require("dotenv").config();
 
-//loading var
+const schedule = require("node-schedule");
 
-var email = process.env.EMAIL;
-var password = process.env.PASSWORD;
-var meetCode = process.env.MEETCODE
+const start = schedule.scheduleJob("42 21 * * *", function () {
+  console.log("Class Time");
 
-puppeteer.use(StealthPlugin());
-(async () => {
+  //loading var
+  var email = process.env.EMAIL;
+  var password = process.env.PASSWORD;
+  var meetCode = process.env.MEETCODE;
+
+  puppeteer.use(StealthPlugin());
+
+  (async () => {
     const browser = await puppeteer.launch({
-        headless: false,
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--use-fake-ui-for-media-stream',
-            '--disable-audio-output'
-        ],
+      headless: false,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--use-fake-ui-for-media-stream",
+        "--disable-audio-output",
+      ],
     });
 
-//sigin
+    //closing the default tab
 
-const page = await browser.newPage();
+    const pages = await browser.pages();
+    pages[0].close();
+
+    //sigin
+
+    const page = await browser.newPage();
     const navigationPromise = page.waitForNavigation();
-    await page.goto("https://accounts.google.com/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin");
+    await page.goto(
+      "https://accounts.google.com/signin/v2/identifier?flowName=GlifWebSignIn&flowEntry=ServiceLogin"
+    );
 
-//typing email
+    //typing email
 
-await page.waitForSelector('input[type="email"]');
-await page.click('input[type="email"]');
-await navigationPromise;
-await page.keyboard.type(email, { delay: 400 });
-await page.waitForTimeout(2000);
+    await page.waitForSelector('input[type="email"]');
+    await page.click('input[type="email"]');
+    await navigationPromise;
+    await page.keyboard.type(email, { delay: 400 });
+    await page.waitForTimeout(2000);
 
-//clicking next button
+    //clicking next button
 
-await page.waitForSelector("#identifierNext");
-await page.click("#identifierNext");
-console.log("-->email entered")
+    await page.waitForSelector("#identifierNext");
+    await page.click("#identifierNext");
+    console.log("-->email entered");
 
-//typing password
+    //typing password
 
-await page.waitForTimeout(3500);
-await page.keyboard.type(password, { delay: 300 });
-await page.waitForTimeout(800);
-await page.keyboard.press('Enter');
-await navigationPromise;
-console.log("-->password entered")
+    await page.waitForTimeout(3500);
+    await page.keyboard.type(password, { delay: 300 });
+    await page.waitForTimeout(800);
+    await page.keyboard.press("Enter");
+    await navigationPromise;
+    console.log("-->password entered");
 
-//navigating to google meet
+    //navigating to google meet
 
-await page.waitForTimeout(2500);
+    await page.waitForTimeout(2500);
     await page.goto("https://meet.google.com/");
     await page.waitForSelector('input[type="text"]');
     await page.click('input[type="text"]');
     await page.waitForTimeout(1000);
     await page.keyboard.type(meetCode, { delay: 200 });
     await page.waitForTimeout(900);
-    await page.keyboard.press('Enter');
+    await page.keyboard.press("Enter");
     await navigationPromise;
-    console.log("-->entered in meet link")
+    console.log("-->On Meet Page");
+    await pages[0];
 
-//disabling audio video
+    //disabling audio video
 
-await page.waitForTimeout(8000);
-    await page.keyboard.down('ControlLeft');
-    await page.keyboard.press('KeyD');
-    await page.keyboard.up('ControlLeft');
+    await page.waitForTimeout(8000);
+    await page.keyboard.down("ControlLeft");
+    await page.keyboard.press("KeyD");
+    await page.keyboard.up("ControlLeft");
     await page.waitForTimeout(3000);
-    await page.keyboard.down('ControlLeft');
-    await page.keyboard.press('KeyE');
-    await page.keyboard.up('ControlLeft');
+    await page.keyboard.down("ControlLeft");
+    await page.keyboard.press("KeyE");
+    await page.keyboard.up("ControlLeft");
     await page.waitForTimeout(3000);
-    console.log("-->audio video disabled")
+    console.log("-->audio video disabled");
 
-//Joining
-await page.waitForTimeout(5000);
-    await page.click('span.NPEfkd.RveJvd.snByac')    
-    console.log("-->Requested To Join The Meeting")
+    //Joining
+    await page.waitForTimeout(5000);
 
-//Ending Class -- Not Working
-function endClass(){
-    await this.browser.close();
-    console.log("-->Meeting Left")
-}
-    
-})();    
+    await page.click("span.NPEfkd.RveJvd.snByac");
+    console.log("-->Requested To Join The Meeting/Joined The Meeting");
+
+    const end = schedule.scheduleJob("38 21 * * *", function () {
+      console.log("Class Time");
+
+      //Ending Class -- Not Working
+      page.click("div.NHaLPe.kEoTPd");
+      console.log("-->Meeting Left");
+    });
+  })();
+});
