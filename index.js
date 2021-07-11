@@ -1,9 +1,20 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const schedule = require("node-schedule");
+const figlet = require("figlet");
 require("dotenv").config();
 
+figlet('Made By ADGAMERX', function(err, data) {
+  if (err) {
+      console.log('Something went wrong...');
+      console.dir(err);
+      return;
+  }
+  console.log(data)
+});
+
 const start = schedule.scheduleJob(process.env.START, function () {
+  
   console.log("Class Time");
 
   //loading var
@@ -55,10 +66,11 @@ const start = schedule.scheduleJob(process.env.START, function () {
 
     await page.waitForTimeout(3500);
     await page.keyboard.type(password, { delay: 300 });
+    console.log("-->password entered");
     await page.waitForTimeout(800);
     await page.keyboard.press("Enter");
     await navigationPromise;
-    console.log("-->password entered");
+    console.log("-->Logged In");
 
     //navigating to google meet
 
