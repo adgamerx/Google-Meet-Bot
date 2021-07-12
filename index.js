@@ -100,7 +100,24 @@ const start = schedule.scheduleJob(process.env.START, function () {
     await page.keyboard.press("KeyE");
     await page.keyboard.up("ControlLeft");
     await page.waitForTimeout(3000);
-    console.log("-->audio video disabled");
+
+    //just checking if the audio and video is muted or not
+    if (this.strict) {
+      let audio = await this.page.evaluate(
+        'document.querySelectorAll("div.sUZ4id")[0].children[0].getAttribute("data-is-muted")'
+      );
+      let video = await this.page.evaluate(
+        'document.querySelectorAll("div.sUZ4id")[1].children[0].getAttribute("data-is-muted")'
+      );
+
+      if (audio === "false" || video === "false") {
+        console.log(
+          "-->Not joining meeting. We couldn't disable either audio or video from the device."
+        );
+        return;
+      }
+      console.log("-->audio video disabled");
+    }
 
     //Joining
     // await page.waitForTimeout(5000);
