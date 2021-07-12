@@ -100,24 +100,25 @@ const start = schedule.scheduleJob(process.env.START, function () {
     await page.keyboard.press("KeyE");
     await page.keyboard.up("ControlLeft");
     await page.waitForTimeout(3000);
+    console.log("-->audio video disabled");
 
-    //just checking if the audio and video is muted or not
-    if (this.strict) {
-      let audio = await this.page.evaluate(
-        'document.querySelectorAll("div.sUZ4id")[0].children[0].getAttribute("data-is-muted")'
-      );
-      let video = await this.page.evaluate(
-        'document.querySelectorAll("div.sUZ4id")[1].children[0].getAttribute("data-is-muted")'
-      );
+    //just checking if the audio and video is muted or not !!Not Working
+    // if (true) {
+    //   let audio = await page.evaluate(
+    //     'document.querySelectorAll("div.sUZ4id")[0].children[0].getAttribute("data-is-muted")'
+    //   );
+    //   let video = await page.evaluate(
+    //     'document.querySelectorAll("div.sUZ4id")[1].children[0].getAttribute("data-is-muted")'
+    //   );
 
-      if (audio === "false" || video === "false") {
-        console.log(
-          "-->Not joining meeting. We couldn't disable either audio or video from the device."
-        );
-        return;
-      }
-      console.log("-->audio video disabled");
-    }
+    //   if (audio === "false" || video === "false") {
+    //     console.log(
+    //       "-->Not joining meeting. We couldn't disable either audio or video from the device."
+    //     );
+    //     return;
+    //   }
+    //   console.log("-->audio video disabled");
+    // }
 
     //Joining
     // await page.waitForTimeout(5000);
@@ -137,7 +138,7 @@ const start = schedule.scheduleJob(process.env.START, function () {
       console.log("-->Found Join Now");
       await page.waitForTimeout(2000);
       await page.click("div.e19J0b.CeoRYc");
-      console.log("-->Requested To Join The Meeting/Joined The Meeting");
+      console.log("-->Requested To Join The Meeting");
     }
 
     //Accepting the Join Request (Only enable this if you're asked to join the meeting again/ or recording is on)
@@ -149,10 +150,14 @@ const start = schedule.scheduleJob(process.env.START, function () {
 
     await page.waitForTimeout(10000);
 
-    if (page.$("div.r6xAKc")) {
+    try {
+      await page.waitForSelector(
+        "#ow3 > div.T4LgNb > div > div:nth-child(9) > div.crqnQb > div.rG0ybd.xPh1xb.P9KVBf.LCXT6 > div.TqwH9c > div.SZfyod > div > div > div:nth-child(3) > span > button > i.google-material-icons.VfPpkd-kBDsod.NtU4hc",
+        { timeout: 6000 }
+      );
       console.log("-->Class Joined Successfully");
-    } else {
-      console.log("-->Can't Join Class");
+    } catch (error) {
+      console.log("-->Can't Join The Class");
     }
 
     //Ending Class
