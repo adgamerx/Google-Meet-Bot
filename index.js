@@ -140,7 +140,7 @@ const start = schedule.scheduleJob(process.env.START, function () {
       console.log("-->Requested To Join The Meeting/Joined The Meeting");
     }
 
-    //Accepting the Join Request (Only enable this if you're asked to join the meeting again)
+    //Accepting the Join Request (Only enable this if you're asked to join the meeting again/ or recording is on)
     // await page.waitForSelector("span.RveJvd.snByac");
     // await page.waitForTimeout(5000);
     // await page.click("span.RveJvd.snByac");
