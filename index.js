@@ -4,17 +4,16 @@ const schedule = require("node-schedule");
 const figlet = require("figlet");
 require("dotenv").config();
 
-figlet('Made By ADGAMERX', function(err, data) {
+figlet("Made By ADGAMERX", function (err, data) {
   if (err) {
-      console.log('Something went wrong...');
-      console.dir(err);
-      return;
+    console.log("Something went wrong...");
+    console.dir(err);
+    return;
   }
-  console.log(data)
+  console.log(data);
 });
 
 const start = schedule.scheduleJob(process.env.START, function () {
-  
   console.log("Class Time");
 
   //loading var
@@ -69,12 +68,17 @@ const start = schedule.scheduleJob(process.env.START, function () {
     console.log("-->password entered");
     await page.waitForTimeout(800);
     await page.keyboard.press("Enter");
-    await navigationPromise;
+
+    await page.waitForNavigation({
+      waitUntil: "networkidle0",
+    });
     console.log("-->Logged In");
+
+    // await navigationPromise;
 
     //navigating to google meet
 
-    await page.waitForTimeout(2500);
+    await page.waitForTimeout(4000);
     await page.goto("https://meet.google.com/");
     await page.waitForSelector('input[type="text"]');
     await page.click('input[type="text"]');
@@ -99,17 +103,45 @@ const start = schedule.scheduleJob(process.env.START, function () {
     console.log("-->audio video disabled");
 
     //Joining
-    await page.waitForTimeout(5000);
+    // await page.waitForTimeout(5000);
+    // await page.click("span.NPEfkd.RveJvd.snByac");
+    // console.log("-->Requested To Join The Meeting/Joined The Meeting");
 
-    await page.click("span.NPEfkd.RveJvd.snByac");
-    console.log("-->Requested To Join The Meeting/Joined The Meeting");
+    await page.waitForTimeout(10000);
+    const element = await page.$("span.NPEfkd.RveJvd.snByac");
+    const text = await (await element.getProperty("textContent")).jsonValue();
+    if (text === "Ask to join") {
+      console.log("-->Found Ask to join");
+      await page.waitForTimeout(2000);
+      console.log("-->Requested To Join The Meeting/Joined The Meeting");
+      await page.click("div.e19J0b.CeoRYc");
+      await page.waitForTimeout(1000);
+    } else {
+      console.log("-->Found Join Now");
+      await page.waitForTimeout(2000);
+      await page.click("div.e19J0b.CeoRYc");
+      console.log("-->Requested To Join The Meeting/Joined The Meeting");
+    }
 
+    //Accepting the Join Request (Only enable this if you're asked to join the meeting again)
+    // await page.waitForSelector("span.RveJvd.snByac");
+    // await page.waitForTimeout(5000);
+    // await page.click("span.RveJvd.snByac");
+
+    //Checking If The Class is joined or not
+
+    await page.waitForTimeout(10000);
+
+    if (page.$("div.r6xAKc")) {
+      console.log("-->Class Joined Successfully");
+    } else {
+      console.log("-->Can't Join Class");
+    }
+
+    //Ending Class
     const end = schedule.scheduleJob(process.env.END, function () {
-      console.log("Class Time");
-
-      //Ending Class -- Not Working
       page.click("div.NHaLPe.kEoTPd");
-      console.log("-->Meeting Left");
+      console.log("-->Meeting Left Successfully");
     });
   })();
 });
